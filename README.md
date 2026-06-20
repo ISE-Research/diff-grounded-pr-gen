@@ -1,4 +1,4 @@
-# 💡 Diff-Grounded PR Description Generation
+# Diff-Grounded PR Description Generation
 
 An LLM pipeline that generates reviewer-ready GitHub pull-request descriptions directly from code evidence — commits, file diffs, and linked issues — under strict grounding rules.
 
@@ -6,13 +6,13 @@ This repository is the replication package for our research on automatic, diff-g
 
 ## Table of Contents
 
-- [Overview](#-overview)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Reproduction Instructions](#-reproduction-instructions)
-- [Project Structure](#-project-structure)
+- [Overview](#overview)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Reproduction Instructions](#reproduction-instructions)
+- [Project Structure](#project-structure)
 
-## 🔍 Overview
+## Overview
 
 The pipeline runs in two halves. The first **prepares evidence** from raw GitHub artifacts into a cached `PRContext`; the second performs **controlled generation and assessment** over that frozen evidence. Generation and judging stay inside the same evidence boundary, which is what enforces grounding.
 
@@ -37,7 +37,7 @@ flowchart TB
 
 The four generation modes toggle the two enhancement components (CMG and file-diff summarization), so each component's contribution can be isolated against the `raw` zero-shot baseline. The `PRContext` is implemented as a `networkx` knowledge graph and cached so every experiment sees an identical view of each PR. See [architecture.md](architecture.md) for a full, file-by-file reference.
 
-## ⚙️ Installation
+## Installation
 
 Estimated setup time: < 5 minutes.
 
@@ -69,7 +69,7 @@ export OPENAI_API_KEY=...      # default provider
 
 Provider, model, datasets, ablation modes, ranking weights, and judge limits are all configured in `config/pipeline.yaml`.
 
-## 🚀 Quick Start
+## Quick Start
 
 Run the three pipeline stages in order from the repo root:
 
@@ -92,7 +92,7 @@ python description-generation/main.py --repo_name owner/repo --pr 123
 
 Outputs are written under `results/` (`knowledge_graph/`, `pr-description/<provider>/`, `judge/<provider>/`).
 
-## 📊 Reproduction Instructions
+## Reproduction Instructions
 
 To reproduce the paper's evaluation, run the full pipeline above on the configured dataset, then the analysis scripts:
 
@@ -111,7 +111,7 @@ Notes:
 - `analyze_human_evaluation.py` runs against the included `final-results/data/human-data/`.
 - The judge-derived analysis scripts read the judged-output JSONs your run produces (the large frozen evaluation set is not shipped with this artifact).
 
-## 📂 Project Structure
+## Project Structure
 
 - `config/` — pipeline configuration (`pipeline.yaml`) and loader
 - `data/` — input dataset CSVs (`repo_name`, `pr_number`) and the PR-id normalizer
