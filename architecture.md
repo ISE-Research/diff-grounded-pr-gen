@@ -1,4 +1,11 @@
-# Final Codebase Architecture
+# Architecture
+
+> **Note on this artifact.** This document is a durable technical reference for the full pipeline, including artifacts that are created at run time. For the published artifact:
+> - Paths in the prose are written relative to `final-codebase/`; in this repository those same files live at the repository root (for example, `final-codebase/judge/judge.py` is `judge/judge.py` here).
+> - Generated outputs are **not** shipped and are produced by running the pipeline: `results/` (knowledge graphs, generation outputs, judge outputs), `final-results/eval/` (tables and plots), and `final-results/data/description-data/`.
+> - Local secrets (`.env`) and the Python virtual environment are not included.
+>
+> Sections below that describe artifacts as "present", "checked-in", or "already produced" refer to what a full run produces, not to files shipped in this repository. The artifact ships the pipeline code, input datasets, analysis scripts, and human-study inputs.
 
 ## Purpose of This Document
 
