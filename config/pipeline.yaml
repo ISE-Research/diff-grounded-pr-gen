@@ -1,0 +1,102 @@
+llm:
+  provider: openai
+  base_url: null
+  model: gpt-5-mini-2025-08-07
+  temperature: 0.2
+  log_prompts: true
+
+dataset:
+  name: parsed
+
+cmg:
+  enabled: true
+  demo_scope: global
+  k: 16
+  batch_enabled: false
+  max_chunk_tokens: 16000
+  batch_demo_k: 2
+  max_commits_per_chunk: null
+  sem_model: sentence-transformers/all-MiniLM-L6-v2
+  log: true
+  debug_demos: 2
+  qa:
+    use_sem: true
+    score_threshold: 0.8
+    good_threshold: 0.65
+    min_improve: 0
+    llm_judge: false
+    pairwise: false
+
+generation_modes:
+  - name: test_mode
+    description: "CMG rewritten commits and file-level summaries (testing mode)."
+    use_cmg: true
+    include_file_summaries: true
+    include_commits: true
+  - name: raw
+    description: "Original commit messages only; no CMG or file summaries."
+    use_cmg: false
+    include_file_summaries: false
+    include_commits: true
+  - name: cmg_only
+    description: "CMG rewritten commits without file-level summaries."
+    use_cmg: true
+    include_file_summaries: false
+    include_commits: true
+  - name: file_summaries_only
+    description: "Original commit messages plus file-level summaries."
+    use_cmg: false
+    include_file_summaries: true
+    include_commits: true
+  - name: full
+    description: "CMG rewritten commits and file-level summaries."
+    use_cmg: true
+    include_file_summaries: true
+    include_commits: true
+
+# Run only a subset of modes without deleting them.
+# Accepts mode "name" or "slug" values.
+active_generation_modes:
+  - raw
+  - cmg_only
+  - file_summaries_only
+  - full
+
+file_summaries:
+  batch_size_small: 2
+  batch_size_large: 3
+  docs_top_k: 5
+  max_diff_lines_per_prompt: 350
+
+ranking:
+  file:
+    include_all_if_file_count_leq: 15
+    top_k_large: 25
+    weights:
+      path_keyword: 2.0
+      api_impact: 2.0
+      test_path: 1.0
+      ci_path: 1.0
+      size_log: 0.4
+      status_added: 0.3
+      status_deleted: 0.3
+      noise_penalty: 1.5
+  commit:
+    include_all_if_commit_count_leq: 8
+    top_k_large: 6
+    weights:
+      impact: 0.65
+      intent: 0.35
+      issue_link: 1.5
+      starts_with_verb: 1.0
+      cmg_quality: 1.0
+      cmg_identifier_overlap: 0.8
+      short_penalty: 0.7
+
+judge:
+  temperature: 0
+  evidence:
+    max_file_list_items: 200
+
+commit_payload:
+  max_tokens_per_prompt: 0
