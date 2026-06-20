@@ -1,0 +1,12 @@
+python-dotenv==1.1.1
+PyYAML==6.0.2
+pandas==2.3.2
+PyGithub==2.6.1
+openai==1.109.0
+mistralai==1.9.1
+google-genai==1.33.0
+google-generativeai==0.7.2
+networkx==3.4.2
+numpy==2.2.6
+sentence-transformers==5.0.0
+datasets==4.1.1
