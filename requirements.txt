@@ -10,3 +10,4 @@ networkx==3.4.2
 numpy==2.2.6
 sentence-transformers==5.0.0
 datasets==4.1.1
+matplotlib==3.10.0
