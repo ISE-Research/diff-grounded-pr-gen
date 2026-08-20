@@ -50,24 +50,9 @@ python judge/judge.py
 
 The pipeline runs in two halves. The first **prepares evidence** from raw GitHub artifacts into a cached `PRContext`; the second performs **controlled generation and assessment** over that frozen evidence. Generation and judging stay inside the same evidence boundary, which is what enforces grounding.
 
-```mermaid
-flowchart TB
-    subgraph PREP["Evidence preparation"]
-        GH["GitHub artifacts<br/>repo and PR metadata - linked issues<br/>commits + patches - file diffs"] --> PC[("Cached PR evidence<br/>PRContext")]
-    end
+![Overview of the diff-grounded pull request description generation pipeline.](figures/architecture.png)
 
-    subgraph GENASSESS["Controlled generation and assessment"]
-        CMG["Commit-message<br/>generation (CMG)"] --> SYN["Final PR description synthesis<br/>one structured LLM call"]
-        FDS["File-diff<br/>summarization"] --> SYN
-    end
-
-    PC --> CMG
-    PC --> FDS
-    PC --> SYN
-    SYN --> OUT["PR description per mode<br/>raw - cmg_only - file_summaries_only - full"]
-    OUT --> JUDGE["LLM-as-a-judge<br/>correctness - coverage - clarity"]
-    OUT --> HUMAN["Human evaluation"]
-```
+The image above is a README preview derived from the canonical camera-ready PDF at `figures/architecture.pdf`.
 
 The four generation modes toggle the two enhancement components (CMG and file-diff summarization), so each component's contribution can be isolated against the `raw` zero-shot baseline. The `PRContext` is implemented as a `networkx` knowledge graph and cached so every experiment sees an identical view of each PR. See [architecture.md](architecture.md) for a full, file-by-file reference.
 
@@ -91,6 +76,7 @@ The camera-ready paper figures are stored in [figures/](figures/). The top-level
 | File | Purpose |
 | --- | --- |
 | `figures/architecture.pdf` | End-to-end system architecture. |
+| `figures/architecture.png` | README preview derived from `figures/architecture.pdf`. |
 | `figures/cached-artifact-schema.pdf` | Reconstructed `PRContext` record schema. |
 | `figures/cmg.pdf` | Commit-message generation and quality-gating component. |
 | `figures/file-diff-summarization.pdf` | File-diff selection and summarization component. |
