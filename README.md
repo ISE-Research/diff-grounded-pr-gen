@@ -1,16 +1,50 @@
-# Diff-Grounded PR Description Generation
+# Diff-Grounded Pull Request Description Generation
 
-An LLM pipeline that generates reviewer-ready GitHub pull-request descriptions directly from code evidence — commits, file diffs, and linked issues — under strict grounding rules.
+Replication package for **Diff-Grounded Pull Request Description Generation with Structured Evidence**, accepted at the 42nd IEEE International Conference on Software Maintenance and Evolution (ICSME 2026).
 
-This repository is the replication package for our research on automatic, diff-grounded pull request (PR) description generation. The core idea is **diff grounding**: every claim in a generated description must trace back to concrete evidence in the PR, so the model never invents motivation or behavior the diff does not support. The pipeline reconstructs a structured `PRContext` from GitHub artifacts, runs four controlled ablation modes, and evaluates the output with both an evidence-scoped LLM-as-a-judge and a human study.
+This repository contains the code, datasets, analysis scripts, human-study inputs, and paper figures for studying automatic, diff-grounded pull request (PR) description generation. The core idea is **diff grounding**: every claim in a generated description must trace back to concrete evidence in the PR, so the model does not invent motivation or behavior the diff does not support. The pipeline reconstructs a structured `PRContext` from GitHub artifacts, runs controlled ablation modes, and evaluates output with both an evidence-scoped LLM-as-a-judge and a human study.
 
 ## Table of Contents
 
+- [Replication Package Information](#replication-package-information)
 - [Overview](#overview)
+- [Artifact Contents](#artifact-contents)
+- [Canonical Paper Figures](#canonical-paper-figures)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Reproduction Instructions](#reproduction-instructions)
+- [Generated Outputs](#generated-outputs)
 - [Project Structure](#project-structure)
+- [License](#license)
+
+## Replication Package Information
+
+| Item | Details |
+| --- | --- |
+| Paper | **Diff-Grounded Pull Request Description Generation with Structured Evidence** |
+| Venue | 42nd IEEE International Conference on Software Maintenance and Evolution (ICSME 2026) |
+| Artifact type | Replication package for code, datasets, analysis scripts, human-study inputs, and camera-ready figures |
+| Primary workflow | Collect GitHub PR evidence, cache it as `PRContext`, generate ablation-mode PR descriptions, judge outputs, and regenerate final summaries |
+| Main setup path | Create a Python virtual environment, install `requirements.txt`, set GitHub/LLM credentials, then run the three pipeline stages below |
+| Canonical figures | Top-level PDFs under `figures/`; old versions are kept only under `figures/old-1/` and `figures/old-2/` |
+| Included inputs | PR target CSVs under `data/` and human-study inputs under `final-results/data/human-data/` |
+| Generated outputs | `results/`, `final-results/eval/`, and `final-results/data/description-data/` are regenerated locally and intentionally ignored by git |
+| License | MIT License, with upstream terms retained for third-party/GitHub-derived material |
+
+The fastest reviewer path is:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+export GITHUB_TOKEN=...
+export OPENAI_API_KEY=...
+
+python data-collection/build_knowledge_graph.py --limit 5
+python description-generation/main.py --limit 5
+python judge/judge.py
+```
 
 ## Overview
 
@@ -19,7 +53,7 @@ The pipeline runs in two halves. The first **prepares evidence** from raw GitHub
 ```mermaid
 flowchart TB
     subgraph PREP["Evidence preparation"]
-        GH["GitHub artifacts<br/>repo and PR metadata · linked issues<br/>commits + patches · file diffs"] --> PC[("Cached PR evidence<br/>PRContext")]
+        GH["GitHub artifacts<br/>repo and PR metadata - linked issues<br/>commits + patches - file diffs"] --> PC[("Cached PR evidence<br/>PRContext")]
     end
 
     subgraph GENASSESS["Controlled generation and assessment"]
@@ -30,16 +64,43 @@ flowchart TB
     PC --> CMG
     PC --> FDS
     PC --> SYN
-    SYN --> OUT["PR description per mode<br/>raw · cmg_only · file_summaries_only · full"]
-    OUT --> JUDGE["LLM-as-a-judge<br/>correctness · coverage · clarity"]
+    SYN --> OUT["PR description per mode<br/>raw - cmg_only - file_summaries_only - full"]
+    OUT --> JUDGE["LLM-as-a-judge<br/>correctness - coverage - clarity"]
     OUT --> HUMAN["Human evaluation"]
 ```
 
 The four generation modes toggle the two enhancement components (CMG and file-diff summarization), so each component's contribution can be isolated against the `raw` zero-shot baseline. The `PRContext` is implemented as a `networkx` knowledge graph and cached so every experiment sees an identical view of each PR. See [architecture.md](architecture.md) for a full, file-by-file reference.
 
+## Artifact Contents
+
+This artifact is organized to support repeatability, inspection, and reuse:
+
+- runnable source code for collection, generation, judging, and analysis
+- input PR target lists under `data/`
+- human-study inputs under `final-results/data/human-data/`
+- analysis scripts under `final-results/scripts/`
+- canonical camera-ready figure PDFs under `figures/`
+- architecture and setup documentation
+
+Generated outputs are intentionally excluded from version control and can be regenerated by running the pipeline. This keeps the public source package compact while preserving the commands needed to recreate the reported outputs.
+
+## Canonical Paper Figures
+
+The camera-ready paper figures are stored in [figures/](figures/). The top-level PDFs in that directory are the canonical versions:
+
+| File | Purpose |
+| --- | --- |
+| `figures/architecture.pdf` | End-to-end system architecture. |
+| `figures/cached-artifact-schema.pdf` | Reconstructed `PRContext` record schema. |
+| `figures/cmg.pdf` | Commit-message generation and quality-gating component. |
+| `figures/file-diff-summarization.pdf` | File-diff selection and summarization component. |
+| `figures/motivating-example.pdf` | Motivating example comparing original, raw zero-shot, and full diff-grounded descriptions. |
+
+Earlier drafts are retained under `figures/old-1/` and `figures/old-2/` for provenance only; they are not the canonical paper figures.
+
 ## Installation
 
-Estimated setup time: < 5 minutes.
+Estimated setup time: < 5 minutes, excluding API account setup and full pipeline runtime.
 
 **Prerequisites**
 
@@ -69,6 +130,27 @@ export OPENAI_API_KEY=...      # default provider
 
 Provider, model, datasets, ablation modes, ranking weights, and judge limits are all configured in `config/pipeline.yaml`.
 
+**Smoke test**
+
+After installation, run a small end-to-end sample:
+
+```bash
+# Build a small cached PRContext
+python data-collection/build_knowledge_graph.py --limit 5
+
+# Generate descriptions for a small sample
+python description-generation/main.py --limit 5
+
+# Judge generated vs. original descriptions
+python judge/judge.py
+```
+
+Expected generated output locations:
+
+- `results/knowledge_graph/`
+- `results/pr-description/<provider>/`
+- `results/judge/<provider>/`
+
 ## Quick Start
 
 Run the three pipeline stages in order from the repo root:
@@ -94,7 +176,7 @@ Outputs are written under `results/` (`knowledge_graph/`, `pr-description/<provi
 
 ## Reproduction Instructions
 
-To reproduce the paper's evaluation, run the full pipeline above on the configured dataset, then the analysis scripts:
+To reproduce the paper's evaluation, run the full pipeline above on the configured dataset, then run the analysis scripts:
 
 ```bash
 cd final-results
@@ -105,22 +187,46 @@ python3 scripts/analyze_human_evaluation.py    # human-study summary
 python3 scripts/analyze_human_llm_agreement.py # human vs. LLM agreement
 ```
 
-Across both datasets, the LLM judge prefers the generated description over the developer's original in **80–94%** of PRs, and a 10-reviewer human study agrees — generated descriptions win **80–83%** of pairwise comparisons against the original. Full tables and figures are in the paper.
+Across both datasets, the LLM judge prefers the generated description over the developer's original in **80-94%** of PRs, and a 10-reviewer human study agrees: generated descriptions win **80-83%** of pairwise comparisons against the original. Full tables and figures are in the paper.
 
 Notes:
 - `analyze_human_evaluation.py` runs against the included `final-results/data/human-data/`.
 - The judge-derived analysis scripts read the judged-output JSONs your run produces (the large frozen evaluation set is not shipped with this artifact).
 
+## Generated Outputs
+
+The following directories are generated at run time and intentionally excluded by `.gitignore`:
+
+- `results/` - knowledge graphs, generated descriptions, judge outputs, and survey exports
+- `final-results/eval/` - regenerated tables and plots
+- `final-results/data/description-data/` - judged-output JSONs copied into the final analysis area
+
+Local secrets and environments are also excluded:
+
+- `.env`
+- `.venv/`
+- `pr-agent-env/`
+
 ## Project Structure
 
-- `config/` — pipeline configuration (`pipeline.yaml`) and loader
-- `data/` — input dataset CSVs (`repo_name`, `pr_number`) and the PR-id normalizer
-- `data-collection/` — GitHub artifact collection and the knowledge-graph builder/reader
-- `description-generation/` — orchestrator, generation components (ranking, CMG, file-diff summarization), and provider wrappers
-- `judge/` — evidence-scoped LLM-as-a-judge and survey export
-- `final-results/scripts/` — analysis scripts that reproduce the evaluation tables and plots
-- `final-results/data/human-data/` — blinded human-study survey and researcher key
-- `architecture.md` — detailed technical reference for the full pipeline
-- `requirements.txt` — Python dependencies
-- `run_pipeline.sh` — convenience runner for the generation + judge stages
-</content>
+- `config/` - pipeline configuration (`pipeline.yaml`) and loader
+- `data/` - input dataset CSVs (`repo_name`, `pr_number`) and the PR-id normalizer
+- `data-collection/` - GitHub artifact collection and the knowledge-graph builder/reader
+- `description-generation/` - orchestrator, generation components (ranking, CMG, file-diff summarization), and provider wrappers
+- `judge/` - evidence-scoped LLM-as-a-judge and survey export
+- `final-results/scripts/` - analysis scripts that reproduce the evaluation tables and plots
+- `final-results/data/human-data/` - blinded human-study survey and researcher key
+- `architecture.md` - detailed technical reference for the full pipeline
+- `requirements.txt` - Python dependencies
+- `run_pipeline.sh` - convenience runner for the generation + judge stages
+
+Additional artifact metadata:
+
+- `INSTALL.md` - standalone installation and smoke-test instructions
+- `STATUS.md` - artifact scope, badge intent, included files, and excluded generated outputs
+- `CONTACT.md` - authorship and contact guidance
+- `LICENSE` - reuse terms
+
+## License
+
+This replication package is released under the MIT License. Third-party data, repository metadata, pull-request text, commit messages, patches, and other GitHub-derived material retain their original upstream licenses and terms where applicable.
