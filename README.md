@@ -215,4 +215,6 @@ Additional artifact metadata:
 
 ## License
 
-This replication package is released under the MIT License. Third-party data, repository metadata, pull-request text, commit messages, patches, and other GitHub-derived material retain their original upstream licenses and terms where applicable.
+This replication package is released under the MIT License.
+
+Third-party data, repository metadata, pull-request text, commit messages, patches, and other GitHub-derived material retain their original upstream licenses and terms where applicable.
