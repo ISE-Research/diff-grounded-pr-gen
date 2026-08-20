@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+pr-agent-env
+__pycache__
+*.pyc
+.env
+.DS_Store
+logs
+description-generation/logs
+judge/logs
+results
+final-results/eval
+final-results/data/description-data
