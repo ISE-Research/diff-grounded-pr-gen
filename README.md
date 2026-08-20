@@ -103,6 +103,20 @@ Estimated setup time: < 5 minutes, excluding API account setup and full pipeline
 - A GitHub token (for the artifact-collection stage)
 - An LLM API key for the configured provider (default: OpenAI)
 
+**Container package**
+
+A prebuilt GitHub Container Registry image is published from `main`:
+
+```bash
+docker pull ghcr.io/ise-research/diff-grounded-pr-gen:latest
+docker run --rm -it \
+  -e GITHUB_TOKEN \
+  -e OPENAI_API_KEY \
+  ghcr.io/ise-research/diff-grounded-pr-gen:latest
+```
+
+Inside the container, the repository is available at `/artifact`.
+
 **Installation steps**
 
 ```bash
