@@ -1,5 +1,10 @@
 # Diff-Grounded Pull Request Description Generation
 
+[![GHCR Package](https://img.shields.io/badge/ghcr.io-diff--grounded--pr--gen:latest-blue?logo=docker)](https://github.com/ISE-Research/diff-grounded-pr-gen/pkgs/container/diff-grounded-pr-gen)
+[![License](https://img.shields.io/github/license/ISE-Research/diff-grounded-pr-gen)](LICENSE)
+[![ICSME 2026](https://img.shields.io/badge/ICSME-2026-purple)](https://conf.researchr.org/details/icsme-2026/icsme-2026-papers/16/Diff-Grounded-Pull-Request-Description-Generation-with-Structured-Evidence)
+[![Publish Container](https://github.com/ISE-Research/diff-grounded-pr-gen/actions/workflows/publish-container.yml/badge.svg)](https://github.com/ISE-Research/diff-grounded-pr-gen/actions/workflows/publish-container.yml)
+
 Replication package for **Diff-Grounded Pull Request Description Generation with Structured Evidence**, accepted at the 42nd IEEE International Conference on Software Maintenance and Evolution (ICSME 2026).
 
 This repository contains the code, datasets, analysis scripts, human-study inputs, and paper figures for studying automatic, diff-grounded pull request (PR) description generation. The core idea is **diff grounding**: every claim in a generated description must trace back to concrete evidence in the PR, so the model does not invent motivation or behavior the diff does not support. The pipeline reconstructs a structured `PRContext` from GitHub artifacts, runs controlled ablation modes, and evaluates output with both an evidence-scoped LLM-as-a-judge and a human study.
