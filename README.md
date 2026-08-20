@@ -50,11 +50,20 @@ python judge/judge.py
 
 The pipeline runs in two halves. The first **prepares evidence** from raw GitHub artifacts into a cached `PRContext`; the second performs **controlled generation and assessment** over that frozen evidence. Generation and judging stay inside the same evidence boundary, which is what enforces grounding.
 
-![Overview of the diff-grounded pull request description generation pipeline.](figures/architecture.png)
+<table>
+<tr>
+<td width="38%" valign="top">
+  <img src="figures/architecture.png" alt="Overview of the diff-grounded pull request description generation pipeline." width="360">
+</td>
+<td width="62%" valign="top">
+The pipeline first creates a cached <code>PRContext</code> from GitHub artifacts, then reuses that frozen evidence for controlled generation and assessment. Optional commit-message generation and file-level summarization can be enabled independently, making each ablation mode comparable over the same PR evidence.
 
-The image above is a README preview derived from the canonical camera-ready PDF at `figures/architecture.pdf`.
+The README image is a compact preview derived from the canonical camera-ready PDF at <code>figures/architecture.pdf</code>. See <a href="architecture.md">architecture.md</a> for the full file-by-file technical reference.
+</td>
+</tr>
+</table>
 
-The four generation modes toggle the two enhancement components (CMG and file-diff summarization), so each component's contribution can be isolated against the `raw` zero-shot baseline. The `PRContext` is implemented as a `networkx` knowledge graph and cached so every experiment sees an identical view of each PR. See [architecture.md](architecture.md) for a full, file-by-file reference.
+The four generation modes toggle the two enhancement components (CMG and file-diff summarization), so each component's contribution can be isolated against the `raw` zero-shot baseline. The `PRContext` is implemented as a `networkx` knowledge graph and cached so every experiment sees an identical view of each PR.
 
 ## Artifact Contents
 
